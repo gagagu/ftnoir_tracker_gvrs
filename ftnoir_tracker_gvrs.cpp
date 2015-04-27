@@ -1,15 +1,34 @@
 #include "ftnoir_tracker_gvrs.h"
+#include "ftnoir_tracker_udp/ftnoir_tracker_udp.h"
 #include "opentrack/plugin-api.hpp"
+#include "opentrack/plugin-support.h"
+#include <QCoreApplication>
+#include <QLibrary>
 
-FTNoIR_Tracker::FTNoIR_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {}
+//#include <stdio.h>
+//#include <windows.h>
 
-FTNoIR_Tracker::~FTNoIR_Tracker()
+GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {}
+
+GVRS_Tracker::~GVRS_Tracker()
 {
     should_quit = true;
     wait();
 }
 
-void FTNoIR_Tracker::run() {
+void GVRS_Tracker::run() {
+	/*HINSTANCE hInstLibrary = LoadLibrary("libopentrack-tracker-udp.dll");
+	if (hInstLibrary)
+    {
+		FTNoIR_Tracker* track = (FTNoIR_Tracker)GetProcAddress(hInstLibrary, "GetConstructor");
+	} else {
+		// error output needed
+		fprintf(stderr, "gvrs tracker: can't load libopentrack-tracker-udp.dll\n");
+	}*/
+	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
+	handle = new QLibrary(fullPath);
+	Constructor = (CTOR_FUNPTR) handle->resolve("GetConstructor");
+
     //QByteArray datagram;
     //datagram.resize(sizeof(last_recv_pose));
     //(void) sock.bind(QHostAddress::Any, (int) s.port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
@@ -24,12 +43,12 @@ void FTNoIR_Tracker::run() {
     }
 }
 
-void FTNoIR_Tracker::start_tracker(QFrame*)
+void GVRS_Tracker::start_tracker(QFrame*)
 {
 	start();
 }
 
-void FTNoIR_Tracker::data(double *data)
+void GVRS_Tracker::data(double *data)
 {
     QMutexLocker foo(&mutex);
     for (int i = 0; i < 6; i++)
@@ -38,5 +57,5 @@ void FTNoIR_Tracker::data(double *data)
 
 extern "C" OPENTRACK_EXPORT ITracker* GetConstructor()
 {
-    return new FTNoIR_Tracker;
+    return new GVRS_Tracker;
 }

@@ -5,22 +5,24 @@
 #include <cmath>
 #include "opentrack/plugin-api.hpp"
 #include "opentrack/options.hpp"
+#include "opentrack/plugin-support.h"
+
 using namespace options;
 
-struct settings {
+struct gvrs_settings {
     pbundle b;
     value<int> port;
-    settings() :
+    gvrs_settings() :
         b(bundle("gvrs-tracker")),
         port(b, "port", 4242)
     {}
 };
 
-class FTNoIR_Tracker : public ITracker, protected QThread
+class GVRS_Tracker : public ITracker, protected QThread
 {
 public:
-	FTNoIR_Tracker();
-    ~FTNoIR_Tracker();
+	GVRS_Tracker();
+    ~GVRS_Tracker();
     void start_tracker(QFrame *);
     void data(double *data);
 protected:
@@ -29,26 +31,29 @@ private:
     //QUdpSocket sock;
     double last_recv_pose[6];
     QMutex mutex;
-    settings s;
+    gvrs_settings s;
     volatile bool should_quit;
+	QLibrary* handle;
+	CTOR_FUNPTR Constructor;
+
 };
 
-class TrackerControls: public ITrackerDialog
+class GVRS_TrackerControls: public ITrackerDialog
 {
     Q_OBJECT
 public:
-	TrackerControls();
+	GVRS_TrackerControls();
     void register_tracker(ITracker *) {}
     void unregister_tracker() {}
 private:
 	Ui::UICFTNClientControls ui;
-    settings s;
+    gvrs_settings s;
 private slots:
 	void doOK();
 	void doCancel();
 };
 
-class FTNoIR_TrackerDll : public Metadata
+class GVRS_TrackerDll : public Metadata
 {
 public:
     QString name() { return QString("GVRS sender"); }

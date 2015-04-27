@@ -3,5 +3,5 @@
 
 extern "C" OPENTRACK_EXPORT Metadata* GetMetadata()
 {
-	return new FTNoIR_TrackerDll;
+	return new GVRS_TrackerDll;
 }

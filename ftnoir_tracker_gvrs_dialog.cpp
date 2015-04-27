@@ -1,7 +1,7 @@
 #include "ftnoir_tracker_gvrs.h"
 #include "opentrack/plugin-api.hpp"
 
-TrackerControls::TrackerControls()
+GVRS_TrackerControls::GVRS_TrackerControls()
 {
 	ui.setupUi( this );
 	
@@ -11,17 +11,17 @@ TrackerControls::TrackerControls()
 	tie_setting(s.port, ui.spinPortNumber);
 }
 
-void TrackerControls::doOK(){
+void GVRS_TrackerControls::doOK(){
 	s.b->save();
 	this->close();
 }
 
-void TrackerControls::doCancel(){
+void GVRS_TrackerControls::doCancel(){
 	s.b->reload();
 	this->close();
 }
 
 extern "C" OPENTRACK_EXPORT ITrackerDialog* GetDialog( )
 {
-	return new TrackerControls;
+	return new GVRS_TrackerControls;
 }
