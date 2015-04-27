@@ -1,5 +1,5 @@
 #pragma once
-//#include "ui_ftnoir_ftnclientcontrols.h"
+#include "ui_ftnoir_ftnclientcontrols.h"
 //#include <QUdpSocket>
 #include <QThread>
 #include <cmath>
@@ -41,7 +41,7 @@ public:
     void register_tracker(ITracker *) {}
     void unregister_tracker() {}
 private:
-//	Ui::UICFTNClientControls ui;
+	Ui::UICFTNClientControls ui;
     settings s;
 private slots:
 	void doOK();

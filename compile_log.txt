@@ -1,0 +1,15 @@
+In file included from ftnoir_tracker_gvrs_dll.cpp:1:0:
+ftnoir_tracker_gvrs.h:2:41: fatal error: ui_ftnoir_ftnclientcontrols.h: No such file or directory
+ #include "ui_ftnoir_ftnclientcontrols.h"
+                                         ^
+compilation terminated.
+In file included from ftnoir_tracker_gvrs_dialog.cpp:1:0:
+ftnoir_tracker_gvrs.h:2:41: fatal error: ui_ftnoir_ftnclientcontrols.h: No such file or directory
+ #include "ui_ftnoir_ftnclientcontrols.h"
+                                         ^
+compilation terminated.
+In file included from ftnoir_tracker_gvrs.cpp:1:0:
+ftnoir_tracker_gvrs.h:2:41: fatal error: ui_ftnoir_ftnclientcontrols.h: No such file or directory
+ #include "ui_ftnoir_ftnclientcontrols.h"
+                                         ^
+compilation terminated.
