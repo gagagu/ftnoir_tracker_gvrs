@@ -1,0 +1,13 @@
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text+0xf): undefined reference to `operator new(unsigned int)'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text$_ZN7QStringC1EPKc[__ZN7QStringC1EPKc]+0x2c): undefined reference to `_imp___ZN7QString16fromAscii_helperEPKci'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text$_ZN8MetadataD2Ev[__ZN8MetadataD2Ev]+0x22): undefined reference to `operator delete(void*)'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text$_ZN17FTNoIR_TrackerDll4iconEv[__ZN17FTNoIR_TrackerDll4iconEv]+0x2a): undefined reference to `_imp___ZN5QIconC1ERK7QString'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text$_ZN15QTypedArrayDataItE10deallocateEP10QArrayData[__ZN15QTypedArrayDataItE10deallocateEP10QArrayData]+0x1d): undefined reference to `_imp___ZN10QArrayData10deallocateEPS_jj'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text$_ZN17FTNoIR_TrackerDllD1Ev[__ZN17FTNoIR_TrackerDllD1Ev]+0x2c): undefined reference to `operator delete(void*)'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.text$_ZN17FTNoIR_TrackerDllD0Ev[__ZN17FTNoIR_TrackerDllD0Ev]+0x1a): undefined reference to `operator delete(void*)'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.rdata$_ZTV8Metadata[__ZTV8Metadata]+0x8): undefined reference to `__cxa_pure_virtual'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.rdata$_ZTV8Metadata[__ZTV8Metadata]+0xc): undefined reference to `__cxa_pure_virtual'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.rdata$_ZTI17FTNoIR_TrackerDll[__ZTI17FTNoIR_TrackerDll]+0x0): undefined reference to `vtable for __cxxabiv1::__si_class_type_info'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.rdata$_ZTI8Metadata[__ZTI8Metadata]+0x0): undefined reference to `vtable for __cxxabiv1::__class_type_info'
+ftnoir_tracker_gvrs_dll.o:ftnoir_tracker_gvrs_dll.cpp:(.eh_frame$_ZN17FTNoIR_TrackerDll4iconEv+0x13): undefined reference to `__gxx_personality_v0'
+collect2.exe: error: ld returned 1 exit status
