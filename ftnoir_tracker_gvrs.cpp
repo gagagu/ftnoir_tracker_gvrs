@@ -25,20 +25,20 @@ void GVRS_Tracker::run() {
 		// error output needed
 		fprintf(stderr, "gvrs tracker: can't load libopentrack-tracker-udp.dll\n");
 	}*/
-	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
-	handle = new QLibrary(fullPath);
-	Constructor = (CTOR_FUNPTR) handle->resolve("GetConstructor");
+	//QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
+	//handle = new QLibrary(fullPath);
+	//Constructor = (CTOR_FUNPTR) handle->resolve("GetConstructor");
 
-    //QByteArray datagram;
-    //datagram.resize(sizeof(last_recv_pose));
-    //(void) sock.bind(QHostAddress::Any, (int) s.port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
+    QByteArray datagram;
+    datagram.resize(sizeof(last_recv_pose));
+    (void) sock.bind(QHostAddress::Any, (int) s.port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
     for (;;) {
         if (should_quit)
             break;
         QMutexLocker foo(&mutex);
-        //while (sock.hasPendingDatagrams()) {
-        //    sock.readDatagram((char * ) last_recv_pose, sizeof(double[6]));
-        //}
+        while (sock.hasPendingDatagrams()) {
+            sock.readDatagram((char * ) last_recv_pose, sizeof(double[6]));
+        }
         msleep(1);
     }
 }

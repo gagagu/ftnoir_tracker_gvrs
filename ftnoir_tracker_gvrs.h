@@ -1,6 +1,6 @@
 #pragma once
 #include "ui_ftnoir_ftnclientcontrols.h"
-//#include <QUdpSocket>
+#include <QUdpSocket>
 #include <QThread>
 #include <cmath>
 #include "opentrack/plugin-api.hpp"
@@ -28,7 +28,7 @@ public:
 protected:
 	void run() override;
 private:
-    //QUdpSocket sock;
+    QUdpSocket sock;
     double last_recv_pose[6];
     QMutex mutex;
     gvrs_settings s;
