@@ -8,12 +8,20 @@
 //#include <stdio.h>
 //#include <windows.h>
 
-GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {}
+GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
+	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
+	handle = new QLibrary(fullPath);
+	if(handle){
+		ptrTracker = (TRACKER_PTR) handle->resolve("GetConstructor");
+		//if(ptrTracker)
+			ptrTracker();
+	}
+}
 
 GVRS_Tracker::~GVRS_Tracker()
 {
     should_quit = true;
-    wait();
+    wait();			
 }
 
 void GVRS_Tracker::run() {
@@ -25,10 +33,12 @@ void GVRS_Tracker::run() {
 		// error output needed
 		fprintf(stderr, "gvrs tracker: can't load libopentrack-tracker-udp.dll\n");
 	}*/
-	//QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
-	//handle = new QLibrary(fullPath);
-	//Constructor = (CTOR_FUNPTR) handle->resolve("GetConstructor");
-
+	if(handle){
+		ptrTracker = (TRACKER_PTR) handle->resolve("run");
+		//if(ptrTracker)
+			ptrTracker();
+	}
+	
     QByteArray datagram;
     datagram.resize(sizeof(last_recv_pose));
     (void) sock.bind(QHostAddress::Any, (int) s.port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
@@ -43,9 +53,15 @@ void GVRS_Tracker::run() {
     }
 }
 
-void GVRS_Tracker::start_tracker(QFrame*)
+void GVRS_Tracker::start_tracker(QFrame* videoframe)
 {
 	start();
+	
+	if(handle){
+		ptrTrackerStart = (TRACKER_PTRSTART) handle->resolve("start_tracker");
+		//if(ptrTrackerStart)
+			ptrTrackerStart(videoframe);
+	}
 }
 
 void GVRS_Tracker::data(double *data)
