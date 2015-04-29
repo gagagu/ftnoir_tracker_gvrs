@@ -5,13 +5,18 @@
 #include <QCoreApplication>
 #include <QLibrary>
 
+//#include "ftnoir_tracker_aruco/ftnoir_tracker_aruco.h"
+//#include "opentrack/tracker.h"
 
 GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
 	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
 	handle = new QLibrary(fullPath);
 	if(handle){
 		ptrTracker = (TRACKER_PTR) handle->resolve("GetConstructor");
+		ptrTracker();
+		artrack = reinterpret_cast<ITracker*>(ptrTracker);		
 	}
+	
 }
 
 GVRS_Tracker::~GVRS_Tracker()
@@ -21,9 +26,9 @@ GVRS_Tracker::~GVRS_Tracker()
 }
 
 void GVRS_Tracker::run() {
-	if(ptrTracker){
-		ptrTracker->run();
-	}
+//	if(ptrTracker){
+//		ptrTracker->run();
+//	}
 	
     QByteArray datagram;
     datagram.resize(sizeof(last_recv_pose));
@@ -43,11 +48,14 @@ void GVRS_Tracker::start_tracker(QFrame* videoframe)
 {
 	start();
 	
+	//ptrTracker->start_tracker(videoframe);
 	//if(handle){
 		//ptrTrackerStart = (TRACKER_PTRSTART) handle->resolve("start_tracker");
 		//if(ptrTrackerStart)
 			//ptrTrackerStart(videoframe);
 	//}
+	artrack->start_tracker(videoframe);
+
 }
 
 void GVRS_Tracker::data(double *data)
