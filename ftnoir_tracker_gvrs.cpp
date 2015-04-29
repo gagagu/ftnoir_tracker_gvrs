@@ -5,16 +5,12 @@
 #include <QCoreApplication>
 #include <QLibrary>
 
-//#include <stdio.h>
-//#include <windows.h>
 
 GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
 	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
 	handle = new QLibrary(fullPath);
 	if(handle){
 		ptrTracker = (TRACKER_PTR) handle->resolve("GetConstructor");
-		//if(ptrTracker)
-			ptrTracker();
 	}
 }
 
@@ -25,18 +21,8 @@ GVRS_Tracker::~GVRS_Tracker()
 }
 
 void GVRS_Tracker::run() {
-	/*HINSTANCE hInstLibrary = LoadLibrary("libopentrack-tracker-udp.dll");
-	if (hInstLibrary)
-    {
-		FTNoIR_Tracker* track = (FTNoIR_Tracker)GetProcAddress(hInstLibrary, "GetConstructor");
-	} else {
-		// error output needed
-		fprintf(stderr, "gvrs tracker: can't load libopentrack-tracker-udp.dll\n");
-	}*/
-	if(handle){
-		ptrTracker = (TRACKER_PTR) handle->resolve("run");
-		//if(ptrTracker)
-			ptrTracker();
+	if(ptrTracker){
+		ptrTracker->run();
 	}
 	
     QByteArray datagram;
@@ -57,11 +43,11 @@ void GVRS_Tracker::start_tracker(QFrame* videoframe)
 {
 	start();
 	
-	if(handle){
-		ptrTrackerStart = (TRACKER_PTRSTART) handle->resolve("start_tracker");
+	//if(handle){
+		//ptrTrackerStart = (TRACKER_PTRSTART) handle->resolve("start_tracker");
 		//if(ptrTrackerStart)
-			ptrTrackerStart(videoframe);
-	}
+			//ptrTrackerStart(videoframe);
+	//}
 }
 
 void GVRS_Tracker::data(double *data)

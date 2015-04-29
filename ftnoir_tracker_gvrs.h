@@ -6,6 +6,7 @@
 #include "opentrack/plugin-api.hpp"
 #include "opentrack/options.hpp"
 #include "opentrack/plugin-support.h"
+#include "ftnoir_tracker_aruco/ftnoir_tracker_aruco.h"
 
 using namespace options;
 
@@ -18,8 +19,7 @@ struct gvrs_settings {
     {}
 };
 
-typedef void* (*TRACKER_PTR)(void);
-typedef void* (*TRACKER_PTRSTART)(QFrame*);
+typedef Tracker* (*TRACKER_PTR)(void);
 
 class GVRS_Tracker : public ITracker, protected QThread
 {
@@ -38,7 +38,6 @@ private:
     volatile bool should_quit;
 	QLibrary* handle;
 	TRACKER_PTR ptrTracker;
-	TRACKER_PTRSTART ptrTrackerStart;
 };
 
 class GVRS_TrackerControls: public ITrackerDialog
