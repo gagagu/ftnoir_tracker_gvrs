@@ -7,9 +7,6 @@
 #include "opentrack/options.hpp"
 #include "opentrack/plugin-support.h"
 
-
-//#include "ftnoir_tracker_aruco/ftnoir_tracker_aruco.h"
-
 using namespace options;
 
 struct gvrs_settings {
@@ -62,5 +59,5 @@ class GVRS_TrackerDll : public Metadata
 {
 public:
     QString name() { return QString("GVRS sender"); }
-    QIcon icon() { return QIcon(":/images/facetracknoir.png"); }
+    QIcon icon() { return QIcon(":/images/gvrs.png"); }
 };

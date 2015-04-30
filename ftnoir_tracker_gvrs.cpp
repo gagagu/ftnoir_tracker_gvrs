@@ -5,16 +5,32 @@
 #include <QCoreApplication>
 #include <QLibrary>
 
-//#include "ftnoir_tracker_aruco/ftnoir_tracker_aruco.h"
-//#include "opentrack/tracker.h"
-
 GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
-	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-udp.dll";
+	// Find dll for aruco tracker and load it
+#if defined(_WIN32)	
+	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-aruco.dll";
 	handle = new QLibrary(fullPath);
 	if(handle){
 		ptrTracker = (TRACKER_PTR) handle->resolve("GetConstructor");
-		artrack = ptrTracker();
+		if(ptrTracker)
+			artrack = ptrTracker();
 	}
+#else
+	QByteArray latin1 = QFile::encodeName("libopentrack-tracker-aruco.dll");
+    handle = dlopen(latin1.constData(), RTLD_NOW |
+#   if defined(__APPLE__)
+                    RTLD_LOCAL|RTLD_FIRST|RTLD_NOW
+#   else
+                    RTLD_NOW|RTLD_GLOBAL|RTLD_NODELETE
+#   endif
+                    );
+   if (handle)
+   {
+		ptrTracker = (TRACKER_PTR) dlsym(handle, "GetConstructor");
+		if(ptrTracker)
+			artrack = ptrTracker();		
+   }		
+#endif
 	
 }
 
@@ -22,13 +38,12 @@ GVRS_Tracker::~GVRS_Tracker()
 {
     should_quit = true;
     wait();			
+	if(artrack)
+		delete artrack;
 }
 
 void GVRS_Tracker::run() {
-//	if(ptrTracker){
-//		ptrTracker->run();
-//	}
-	
+
     QByteArray datagram;
     datagram.resize(sizeof(last_recv_pose));
     (void) sock.bind(QHostAddress::Any, (int) s.port, QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
@@ -46,15 +61,24 @@ void GVRS_Tracker::run() {
 void GVRS_Tracker::start_tracker(QFrame* videoframe)
 {
 	start();
-	
-	artrack->start_tracker(videoframe);
+	// start aruco tracker
+	if(artrack)
+		artrack->start_tracker(videoframe);
 
 }
 
 void GVRS_Tracker::data(double *data)
 {
+	double ardata[6] {0,0,0, 0,0,0};
     QMutexLocker foo(&mutex);
-    for (int i = 0; i < 6; i++)
+
+	if(artrack)
+		artrack->data(ardata);
+	// Set Aruco data (x,y,z)
+    for (int i = 0; i < 3; i++)
+        data[i] = ardata[i];
+	// set udp data (yaw,pitch,roll)
+    for (int i = 3; i < 6; i++)
         data[i] = last_recv_pose[i];
 }
 
