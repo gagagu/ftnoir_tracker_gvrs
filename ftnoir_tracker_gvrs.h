@@ -22,7 +22,6 @@ struct gvrs_settings {
 };
 
 typedef ITracker* (*TRACKER_PTR)(void);
-typedef ITracker* (*TRACKER_PTRSTART)(QFrame*);
 
 class GVRS_Tracker : public ITracker, protected QThread
 {
@@ -41,7 +40,6 @@ private:
     volatile bool should_quit;
 	QLibrary* handle;
 	TRACKER_PTR ptrTracker;
-	TRACKER_PTRSTART ptrTrackerStart;
 	ITracker* artrack;
 };
 
