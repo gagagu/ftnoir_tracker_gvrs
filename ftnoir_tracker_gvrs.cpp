@@ -5,10 +5,18 @@
 #include <QCoreApplication>
 #include <QLibrary>
 
+#if defined(__APPLE__)
+#   define SONAME "dylib"
+#elif defined(_WIN32)
+#   define SONAME "dll"
+#else
+#   define SONAME "so"
+#endif
+
 GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
 	// Find dll for aruco tracker and load it
 #if defined(_WIN32)	
-	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-aruco.dll";
+	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-aruco." + SONAME;
 	handle = new QLibrary(fullPath);
 	if(handle){
 		ptrTracker = (TRACKER_PTR) handle->resolve("GetConstructor");
@@ -16,7 +24,7 @@ GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(fals
 			artrack = ptrTracker();
 	}
 #else
-	QByteArray latin1 = QFile::encodeName("libopentrack-tracker-aruco.dll");
+	QByteArray latin1 = QFile::encodeName("libopentrack-tracker-aruco." + SONAME);
     handle = dlopen(latin1.constData(), RTLD_NOW |
 #   if defined(__APPLE__)
                     RTLD_LOCAL|RTLD_FIRST|RTLD_NOW
@@ -40,6 +48,14 @@ GVRS_Tracker::~GVRS_Tracker()
     wait();			
 	if(artrack)
 		delete artrack;
+	
+	#if defined(_WIN32)
+    if (handle)
+        delete handle;
+	#else
+		if (handle)
+			(void) dlclose(handle);
+	#endif
 }
 
 void GVRS_Tracker::run() {
