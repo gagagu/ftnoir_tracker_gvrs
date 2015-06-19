@@ -1,6 +1,5 @@
 # ftnoir_tracker_gvrs
-VR Streamer Plugin for opentrack 2.3 release candidate 9 
-to use in combination with my VR Streamer Server and VR Streamer iOS App.
+VR Streamer Plugin for opentrack to use in combination with my VR Streamer Server and VR Streamer iOS App.
 It is a combination of the acuro tracker and udp tracker. The Sensor data will transmit from iPhone to opentrack per UDP.
 The aruco tracker is used for positional tracking (position of iPhone in space). My plugin will miy this inportmations
 to give you a poweful VR Headtracking system for my VR Streaming Server.
