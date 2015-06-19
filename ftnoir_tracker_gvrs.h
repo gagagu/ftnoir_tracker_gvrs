@@ -3,9 +3,11 @@
 #include <QUdpSocket>
 #include <QThread>
 #include <cmath>
+
+#include "opentrack/plugin-support.hpp"
 #include "opentrack/plugin-api.hpp"
 #include "opentrack/options.hpp"
-#include "opentrack/plugin-support.h"
+
 
 using namespace options;
 
@@ -17,8 +19,6 @@ struct gvrs_settings {
         port(b, "port", 4242)
     {}
 };
-
-typedef ITracker* (*TRACKER_PTR)(void);
 
 class GVRS_Tracker : public ITracker, protected QThread
 {
@@ -35,9 +35,10 @@ private:
     QMutex mutex;
     gvrs_settings s;
     volatile bool should_quit;
-	QLibrary* handle;
-	TRACKER_PTR ptrTracker;
-	ITracker* artrack;
+
+	mem<dylib> arucolib;
+	mem<ITracker> pTracker;
+
 };
 
 class GVRS_TrackerControls: public ITrackerDialog

@@ -1,9 +1,9 @@
 #include "ftnoir_tracker_gvrs.h"
-#include "ftnoir_tracker_udp/ftnoir_tracker_udp.h"
 #include "opentrack/plugin-api.hpp"
-#include "opentrack/plugin-support.h"
+#include "opentrack/plugin-support.hpp"
 #include <QCoreApplication>
 #include <QLibrary>
+#include "opentrack/selected-libraries.cpp"
 
 #if defined(__APPLE__)
 #   define SONAME "dylib"
@@ -14,48 +14,40 @@
 #endif
 
 GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
-	// Find dll for aruco tracker and load it
-#if defined(_WIN32)	
-	QString fullPath = QCoreApplication::applicationDirPath() + "/" + "libopentrack-tracker-aruco." + SONAME;
-	handle = new QLibrary(fullPath);
-	if(handle){
-		ptrTracker = (TRACKER_PTR) handle->resolve("GetConstructor");
-		if(ptrTracker)
-			artrack = ptrTracker();
+	// Find for aruco tracker and load it
+	Modules m;
+	for (auto x : m.trackers())
+	{
+		if(x->name == "aruco -- paper marker tracker")
+		{
+			arucolib = x;
+			break;
+		}
 	}
-#else
-	QByteArray latin1 = QFile::encodeName("libopentrack-tracker-aruco." + SONAME);
-    handle = dlopen(latin1.constData(), RTLD_NOW |
-#   if defined(__APPLE__)
-                    RTLD_LOCAL|RTLD_FIRST|RTLD_NOW
-#   else
-                    RTLD_NOW|RTLD_GLOBAL|RTLD_NODELETE
-#   endif
-                    );
-   if (handle)
-   {
-		ptrTracker = (TRACKER_PTR) dlsym(handle, "GetConstructor");
-		if(ptrTracker)
-			artrack = ptrTracker();		
-   }		
-#endif
+	
+	// create an instance
+	if (arucolib != nullptr && arucolib->Constructor)
+	{
+		pTracker = make_instance<ITracker>(arucolib);
+	}
+	
 	
 }
 
 GVRS_Tracker::~GVRS_Tracker()
 {
     should_quit = true;
-    wait();			
-	if(artrack)
-		delete artrack;
+    wait();		
 	
-	#if defined(_WIN32)
-    if (handle)
-        delete handle;
-	#else
-		if (handle)
-			(void) dlclose(handle);
-	#endif
+    if (pTracker)
+    {
+		pTracker = nullptr;
+    }
+
+	if (arucolib != nullptr){
+        arucolib = nullptr;
+	}
+		
 }
 
 void GVRS_Tracker::run() {
@@ -77,22 +69,25 @@ void GVRS_Tracker::run() {
 void GVRS_Tracker::start_tracker(QFrame* videoframe)
 {
 	start();
+	
 	// start aruco tracker
-	if(artrack)
-		artrack->start_tracker(videoframe);
-
+	if(pTracker)
+		pTracker->start_tracker(videoframe);
 }
 
 void GVRS_Tracker::data(double *data)
 {
 	double ardata[6] {0,0,0, 0,0,0};
     QMutexLocker foo(&mutex);
+	
+	// read data
+	if(pTracker)
+		pTracker->data(ardata);
 
-	if(artrack)
-		artrack->data(ardata);
 	// Set Aruco data (x,y,z)
     for (int i = 0; i < 3; i++)
         data[i] = ardata[i];
+
 	// set udp data (yaw,pitch,roll)
     for (int i = 3; i < 6; i++)
         data[i] = last_recv_pose[i];
