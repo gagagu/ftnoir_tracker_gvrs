@@ -28,7 +28,7 @@ GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(fals
 	// create an instance
 	if (arucolib != nullptr && arucolib->Constructor)
 	{
-		pTracker = make_instance<ITracker>(arucolib);
+		pTracker = make_dylib_instance<ITracker>(arucolib);
 	}
 	
 	
