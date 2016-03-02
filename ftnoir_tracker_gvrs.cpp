@@ -1,21 +1,10 @@
 #include "ftnoir_tracker_gvrs.h"
 #include "opentrack/plugin-api.hpp"
 #include "opentrack/plugin-support.hpp"
-#include <QCoreApplication>
-#include <QLibrary>
-#include "opentrack/selected-libraries.cpp"
-
-#if defined(__APPLE__)
-#   define SONAME "dylib"
-#elif defined(_WIN32)
-#   define SONAME "dll"
-#else
-#   define SONAME "so"
-#endif
-
 GVRS_Tracker::GVRS_Tracker() : last_recv_pose { 0,0,0, 0,0,0 }, should_quit(false) {
-	// Find for aruco tracker and load it
 	Modules m;
+
+	// Find for aruco tracker and load it
 	for (auto x : m.trackers())
 	{
 		if(x->name == "aruco -- paper marker tracker")
@@ -38,15 +27,6 @@ GVRS_Tracker::~GVRS_Tracker()
 {
     should_quit = true;
     wait();		
-	
-    if (pTracker)
-    {
-		pTracker = nullptr;
-    }
-
-	if (arucolib != nullptr){
-        arucolib = nullptr;
-	}
 		
 }
 
@@ -93,7 +73,4 @@ void GVRS_Tracker::data(double *data)
         data[i] = last_recv_pose[i];
 }
 
-extern "C" OPENTRACK_EXPORT ITracker* GetConstructor()
-{
-    return new GVRS_Tracker;
-}
+OPENTRACK_DECLARE_TRACKER(GVRS_Tracker, GVRS_TrackerControls, GVRS_TrackerDll)

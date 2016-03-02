@@ -20,8 +20,3 @@ void GVRS_TrackerControls::doCancel(){
 	s.b->reload();
 	this->close();
 }
-
-extern "C" OPENTRACK_EXPORT ITrackerDialog* GetDialog( )
-{
-	return new GVRS_TrackerControls;
-}

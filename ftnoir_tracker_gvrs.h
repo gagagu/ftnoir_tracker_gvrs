@@ -3,30 +3,29 @@
 #include <QUdpSocket>
 #include <QThread>
 #include <cmath>
-
 #include "opentrack/plugin-support.hpp"
 #include "opentrack/plugin-api.hpp"
-#include "opentrack/options.hpp"
+#include "opentrack-compat/options.hpp"
 
 
 using namespace options;
 
-struct gvrs_settings {
-    pbundle b;
+struct gvrs_settings : opts {
     value<int> port;
     gvrs_settings() :
-        b(bundle("gvrs-tracker")),
-        port(b, "port", 4242)
+        opts("gvrs-tracker"),
+		port(b, "port", 4242)
     {}
 };
+
 
 class GVRS_Tracker : public ITracker, protected QThread
 {
 public:
 	GVRS_Tracker();
-    ~GVRS_Tracker();
-    void start_tracker(QFrame *);
-    void data(double *data);
+    ~GVRS_Tracker() override;
+    void start_tracker(QFrame *) override;
+    void data(double *data) override;
 protected:
 	void run() override;
 private:
@@ -46,8 +45,8 @@ class GVRS_TrackerControls: public ITrackerDialog
     Q_OBJECT
 public:
 	GVRS_TrackerControls();
-    void register_tracker(ITracker *) {}
-    void unregister_tracker() {}
+    void register_tracker(ITracker *) override {}
+    void unregister_tracker() override {}
 private:
 	Ui::UICFTNClientControls ui;
     gvrs_settings s;
